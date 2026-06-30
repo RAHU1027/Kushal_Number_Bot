@@ -12,8 +12,7 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Callb
 # --- CONFIGURATION ---
 TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
 CHANNEL_ID = "@kushal_igcc_chats"
-IMAGE_URL = "https://i.ibb.co/your-image-link.jpg" # Yahan apni image ka direct link daalein
-OWNER_NAME = "🦋💸 ⃪♔‌⃟𝐊𝐔𝐒𝐇𝐀𝐋 🇴‌𝐖𝐍𝐄𝐑≛⃝❛🚩"
+IMAGE_URL = "https://i.ibb.co/your-image-link.jpg" 
 
 # --- RENDER PUBLIC SERVER ---
 app = Flask(__name__)
@@ -27,7 +26,13 @@ def run_web():
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
-# --- BOT LOGIC ---
+# --- HELPERS ---
+def get_random_date_cvv():
+    mm = str(random.randint(1, 12)).zfill(2)
+    yy = str(random.randint(26, 31))
+    cvv = str(random.randint(100, 999))
+    return mm, yy, cvv
+
 async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.type in [constants.ChatType.GROUP, constants.ChatType.SUPERGROUP]:
         return True
@@ -37,31 +42,19 @@ async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         return False
 
+# --- BOT LOGIC ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Animation effect
-    msg = await update.message.reply_text("✨ <b>Initializing...</b>", parse_mode=constants.ParseMode.HTML)
-    await asyncio.sleep(0.5)
-    
-    # Agar user pehle se joined hai
-    if await check_access(update, context):
-        await msg.delete()
-        caption = f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\nUse /gen <code>bin</code> to start."
-        await update.message.reply_photo(photo=IMAGE_URL, caption=caption, parse_mode=constants.ParseMode.HTML)
-        return
-
-    # Agar user joined nahi hai
     keyboard = [[InlineKeyboardButton("🔗 Join Channel", url="https://t.me/kushal_igcc_chats")],
                 [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]]
     
-    caption = f"👋 Hello {update.effective_user.first_name}!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\n\n<b>Please join the channel to access:</b>"
-    await msg.delete()
+    caption = f"👋 Hello {update.effective_user.first_name}!\n\n✨ Welcome to the Generator.\n\n<b>Please join the channel to access:</b>"
     await update.message.reply_photo(photo=IMAGE_URL, caption=caption, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=constants.ParseMode.HTML)
 
 async def check_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     if await check_access(update, context):
-        await query.message.delete()
-        await query.message.reply_text("✅ <b>Verified!</b> You are now allowed to use /gen.", parse_mode=constants.ParseMode.HTML)
+        await query.answer("✅ Verified!")
+        await query.message.edit_caption(caption=f"✅ <b>Verified!</b>\n\nWelcome {query.from_user.first_name}.\nUse /gen <code>bin</code> to start.", parse_mode=constants.ParseMode.HTML, reply_markup=None)
     else:
         await query.answer("❌ Please join the channel first!", show_alert=True)
 
@@ -71,13 +64,17 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if not context.args:
-        await update.message.reply_text("❌ Use: /gen 413098")
+        await update.message.reply_text("❌ Use: /genusethiscommand")
         return
 
     bin_input = context.args[0]
-    # Animation
+    user_name = update.effective_user.first_name
+    
+    # Real-time animation
     msg = await update.message.reply_text("🔄 <b>Generating...</b> [■□□□□] 20%", parse_mode=constants.ParseMode.HTML)
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(0.4)
+    await msg.edit_text("🔄 <b>Generating...</b> [■■■□□] 60%", parse_mode=constants.ParseMode.HTML)
+    await asyncio.sleep(0.4)
     await msg.edit_text("🔄 <b>Generating...</b> [■■■■■] 100%", parse_mode=constants.ParseMode.HTML)
     
     start_t = time.time()
@@ -89,9 +86,12 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             bank, brand, type_cc, country = "Unknown", "Unknown", "Unknown", "Unknown"
 
-    cc_list = [f"<code>{bin_input[:6]}{random.randint(100000000, 999999999)}|06|26|{random.randint(100, 999)}</code>" for _ in range(10)]
+    cc_list = []
+    for _ in range(10):
+        mm, yy, cvv = get_random_date_cvv()
+        cc_list.append(f"<code>{bin_input[:6]}{random.randint(100000000, 999999999)}|{mm}|{yy}|{cvv}</code>")
     
-    final_text = f"""{OWNER_NAME}
+    final_text = f"""<b>OWNER ⇾ {user_name}</b>
 <b>𝗕𝗜𝗡 ⇾ {bin_input}</b>
 <b>𝗔𝗺𝗼𝘂𝗻𝘁 ⇾ 10</b>
 
@@ -107,7 +107,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # --- EXECUTION ---
 if __name__ == '__main__':
-    Thread(target=run_web).start()
+    Thread(target=run_web, daemon=True).start()
     app_bot = ApplicationBuilder().token(TOKEN).build()
     app_bot.add_handler(CommandHandler("start", start))
     app_bot.add_handler(CommandHandler("gen", gen))
