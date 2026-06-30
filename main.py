@@ -89,7 +89,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             bank, brand, type_cc, country = "Unknown", "Unknown", "Unknown", "Unknown"
 
-    cc_list = [f"<code>{bin_input[:6]}{random.randint(100000000, 999999999)}|06|26|{random.randint(100, 999)}</code>" for _ in range(10)]
+    cc_list = [f"<code>{bin_input[:6]}{random.randint(1000000, 99999)}|06|26|{random.randint(100, 20099)}</code>" for _ in range(10)]
     
     final_text = f"""{OWNER_NAME}
 <b>𝗕𝗜𝗡 ⇾ {bin_input}</b>
@@ -97,10 +97,10 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 {"\n".join(cc_list)}
 
-<b>𝗜𝗻𝗳𝗼: {brand.upper()} - {type_cc.upper()}</b>
-<b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>
-<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>
-<b>𝗧𝗶𝗺𝗲: {round(time.time() - start_t, 2)}s</b>
+<b>𝗜𝗻𝗳𝗼: ----- - ----- - -----: {()} - {type_cc.upper()}</b>
+<b>𝐈𝐬𝐬𝐮𝐞𝐫: -----:</b>
+<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: -----: {country}</b>
+ : {round(time.time() - start_t, 2)}s</b>
 ╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"""
     
     await msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
