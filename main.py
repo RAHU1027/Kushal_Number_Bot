@@ -11,7 +11,7 @@ app = Flask(__name__)
 @app.route('/')
 def home(): return "Bot is Fully Operational!"
 
-TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
+TOKEN = "8410119226:AAEDaMjNEmPINLbJc26RsPVNKgGjVNH_fSk"
 CHANNEL_ID = "@kushal_igcc_chats"
 
 # Tumhari saari 20 Premium Emojis
