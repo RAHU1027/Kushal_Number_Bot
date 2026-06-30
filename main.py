@@ -26,7 +26,7 @@ def run_web():
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
-# --- HELPERS ---
+# --- HELPER FUNCTIONS ---
 def get_random_date_cvv():
     mm = str(random.randint(1, 12)).zfill(2)
     yy = str(random.randint(26, 31))
@@ -37,9 +37,11 @@ async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.type in [constants.ChatType.GROUP, constants.ChatType.SUPERGROUP]:
         return True
     try:
-        member = await context.bot.get_chat_member(chat_id=CHANNEL_ID, user_id=update.effective_user.id)
+        # Added timeout to prevent _do_post timeout errors
+        member = await asyncio.wait_for(context.bot.get_chat_member(chat_id=CHANNEL_ID, user_id=update.effective_user.id), timeout=3.0)
         return member.status in ['member', 'administrator', 'creator']
-    except:
+    except Exception as e:
+        logging.error(f"Access Check Error: {e}")
         return False
 
 # --- BOT LOGIC ---
@@ -64,13 +66,12 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if not context.args:
-        await update.message.reply_text("❌ Use: /genusethiscommand")
+        await update.message.reply_text("❌ Use: /gen 413098")
         return
 
     bin_input = context.args[0]
     user_name = update.effective_user.first_name
     
-    # Real-time animation
     msg = await update.message.reply_text("🔄 <b>Generating...</b> [■□□□□] 20%", parse_mode=constants.ParseMode.HTML)
     await asyncio.sleep(0.4)
     await msg.edit_text("🔄 <b>Generating...</b> [■■■□□] 60%", parse_mode=constants.ParseMode.HTML)
