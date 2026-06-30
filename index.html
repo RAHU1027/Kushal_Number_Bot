@@ -1,26 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { background-color: #212121; font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; }
-        .btn { padding: 20px; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; text-align: center; font-size: 14px; }
-        .full { grid-column: span 2; }
-        .blue { background-color: #3498db; }
+        body { background-color: #1a1a1a; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 400px; }
+        .btn { padding: 20px; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; text-align: center; }
+        .full { grid-column: span 2; background-color: #3498db; }
         .green { background-color: #27ae60; }
         .red { background-color: #c0392b; }
+        .blue { background-color: #3498db; }
     </style>
 </head>
 <body>
-    <div class="grid-container">
-        <button class="btn blue full">ADD ME TO YOUR GROUP</button>
-        <button class="btn green" onclick="alert('Instagram Numbers')">INSTAGRAM</button>
-        <button class="btn red" onclick="alert('Facebook Numbers')">FACEBOOK</button>
-        <button class="btn blue" onclick="alert('WhatsApp Numbers')">WHATSAPP</button>
-        <button class="btn blue" onclick="alert('Telegram Numbers')">TELEGRAM</button>
-        <button class="btn blue" onclick="alert('Support')">SUPPORT</button>
-        <button class="btn blue" onclick="alert('Channel')">CHANNEL</button>
+    <button class="btn full">ADD ME TO YOUR GROUP</button>
+    <div class="grid" style="margin-top: 10px;">
+        <button class="btn green">HELP</button>
+        <button class="btn red">SOURCE</button>
+        <button class="btn blue">LANGS</button>
+        <button class="btn blue">SUPPORT</button>
+        <button class="btn blue">CHANNEL</button>
     </div>
 </body>
 </html>
