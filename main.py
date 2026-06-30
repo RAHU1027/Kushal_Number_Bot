@@ -9,7 +9,7 @@ app = Flask(__name__)
 def home(): return "Bot is VIP Active!"
 
 TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
-CHANNEL_ID = "@YOUR_CHANNEL_USERNAME" # Yahan apne channel ka username daalo
+CHANNEL_ID = "@YOUR_CHANNEL_USERNAME" 
 
 PREMIUM_EMOJIS = [
     "6120898777046847624", "6269285159774720688", "6138793380328510194", "6138595008674009570",
@@ -18,6 +18,7 @@ PREMIUM_EMOJIS = [
     "6129589660550171485", "6131847262864675499", "6131969566353395110", "6129448347536198680",
     "6131940510899638481", "6129497520616771484", "6129580830097410852", "6132043212157619800"
 ]
+
 def get_e(): return f"<emoji document_id='{random.choice(PREMIUM_EMOJIS)}'>✨</emoji>"
 
 async def is_member(update, context):
@@ -62,16 +63,39 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.edit_text(f"{get_e()} <b>Processing...</b> [■■■■■] {50*(i+1)}%", parse_mode="HTML")
 
     try:
-        data = requests.get(f"https://lookup.binlist.net/{bin_input[:6]}", timeout=5).json()
-        cards = [f"{bin_input[:6]}{random.randint(1000000000,9999999999)}|06|26|{random.randint(100,999)}" for _ in range(10)]
+        # API Check
+        url = f"https://lookup.binlist.net/{bin_input[:6]}"
+        resp = requests.get(url, timeout=5)
+        data = resp.json() if resp.status_code == 200 else {}
+        
+        bank = data.get('bank', {}).get('name', 'Unknown')
+        brand = data.get('scheme', 'Unknown').upper()
+        country = data.get('country', {}).get('name', 'Unknown')
+
+        cards = []
+        for _ in range(10):
+            base = bin_input[:6] + ''.join([str(random.randint(0, 9)) for _ in range(9)])
+            full_card = base + str(random.randint(0, 9))
+            month = f"{random.randint(1, 12):02d}"
+            year = f"{random.randint(26, 31)}"
+            cvv = f"{random.randint(100, 999)}"
+            cards.append(f"{full_card}|{month}|{year}|{cvv}")
+            
         result = (f"{get_e()} 𝗕𝗜𝗡 ⇾ <code>{bin_input[:6]}</code>\n{get_e()} 𝗔𝗺𝗼𝘂𝗻𝘁 ⇾ 10\n\n<code>{chr(10).join(cards)}</code>\n\n"
-                  f"{get_e()} 𝗜𝗻𝗳𝗼: {data.get('scheme','Unknown')}\n{get_e()} 𝐈𝐬𝐬𝐮𝐞𝐫: {data.get('bank',{}).get('name','Unknown')}\n"
-                  f"{get_e()} 𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {data.get('country',{}).get('name','Unknown')}")
+                  f"{get_e()} 𝗜𝗻𝗳𝗼: {brand}\n{get_e()} 𝐈𝐬𝐬𝐮𝐞𝐫: {bank}\n"
+                  f"{get_e()} 𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}")
         await msg.edit_text(result, parse_mode="HTML")
-    except: await msg.edit_text("❌ Error: Invalid BIN.")
+    except Exception as e: 
+        await msg.edit_text(f"❌ Error: {str(e)}")
+
+def run_flask():
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
 
 if __name__ == '__main__':
-    Thread(target=run_flask).start()
+    # Flask thread start
+    Thread(target=run_flask, daemon=True).start()
+    
+    # Bot start
     app_bot = ApplicationBuilder().token(TOKEN).post_init(post_init).build()
     app_bot.add_handler(CommandHandler("start", start))
     app_bot.add_handler(CommandHandler("gen", gen))
