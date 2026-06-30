@@ -14,7 +14,7 @@ def home(): return "Bot is Fully Operational!"
 TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
 CHANNEL_ID = "@kushal_igcc_chats"
 
-# TUMHARA POORA PREMIUM DATA
+# Tumhari saari 20 Premium Emojis
 PREMIUM_EMOJIS = [
     "6120898777046847624", "6269285159774720688", "6138793380328510194", "6138595008674009570",
     "6138522591230431210", "5864127571754489150", "6269014138748408445", "6118397435338296885",
@@ -32,7 +32,7 @@ async def is_member(update, context):
         return member.status in ['member', 'administrator', 'creator']
     except: return False
 
-# 1. Start Command - Sticker + Animation
+# 1. Start Command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sticker = await update.message.reply_sticker(sticker="CAACAgIAAxkBAAEX2Ntm8-y5a6y5a6y5a6y5a6y5a6y5AAJvAAOtZ9UAAAAy-z963_4uEwQ")
     await asyncio.sleep(1.5)
@@ -46,17 +46,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await send_welcome(update, context)
 
-# 2. Welcome Sender - Profile Photo + Animation
+# 2. Welcome Sender
 async def send_welcome(update, context):
     user = update.effective_user
-    load = await update.message.reply_html(f"{get_e()} <b>Loading Profile...</b>")
+    load = await update.message.reply_html(f"{get_e()} <b>Loading...</b>")
     
     photos = await context.bot.get_user_profile_photos(user_id=user.id, limit=1)
     msg = (f"{get_e()} 👋 Welcome, <a href='tg://user?id={user.id}'>{user.first_name}</a>\n\n"
            f"{get_e()} 👑 𝐎𝐰𝐧𝐞𝐫: 𝐊𝐔𝐒𝐇𝐀𝐋 𝐎𝐖𝐍𝐄𝐑\n"
            f"{get_e()} 🆔 𝐔𝐬𝐞𝐫 𝐈𝐃: <code>{user.id}</code>\n"
            f"━━━━━━━━━━━━━━━━━━\n"
-           f"{get_e()} ✨ 𝖴𝗌𝖾 /gen <code>BIN</code> 𝗍𝗈 𝗀𝖾𝗇𝖾𝗋𝖺𝗍𝖾.")
+           f"{get_e()} ✨ 𝖴𝗌𝖾 /gen <code>BIN</code>.")
     
     await load.delete()
     if photos.photos:
@@ -76,12 +76,12 @@ async def check_join(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await query.answer("❌ Please join @kushal_igcc_chats first!", show_alert=True)
 
-# 4. Fast Gen - Animation Added
+# 4. Gen
 async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await is_member(update, context): return
     if not context.args: await update.message.reply_text("❌ Use: /gen <BIN>"); return
     
-    msg = await update.message.reply_html(f"{get_e()} <b>Analyzing BIN...</b>")
+    msg = await update.message.reply_html(f"{get_e()} <b>Analyzing...</b>")
     
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://lookup.binlist.net/{context.args[0][:6]}", timeout=5) as resp:
@@ -90,10 +90,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     cards = [f"{context.args[0][:6]}{random.randint(1000000000,9999999999)}|{random.randint(1,12):02d}|{random.randint(26,31)}|{random.randint(100,999)}" for _ in range(10)]
     
     res = (f"{get_e()} 𝗕𝗜𝗡 ⇾ <code>{context.args[0][:6]}</code>\n\n<code>{chr(10).join(cards)}</code>\n\n"
-           f"{get_e()} 𝗜𝗻𝗳𝗼: {data.get('scheme','Unknown').upper()}\n"
-           f"{get_e()} 🏦 𝐈𝐬𝐬𝐮𝐞𝐫: {data.get('bank',{}).get('name','Unknown')}\n"
-           f"{get_e()} 🌍 𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {data.get('country',{}).get('name','Unknown')}\n"
-           f"{get_e()} 👤 𝐎𝐰𝐧𝐞𝐫: {update.effective_user.first_name}")
+           f"{get_e()} 👤 𝐃𝐨𝐧𝐞 𝐛𝐲 𝐊𝐮𝐬𝐡𝐚𝐋")
     await msg.edit_text(res, parse_mode="HTML")
 
 if __name__ == '__main__':
@@ -102,4 +99,7 @@ if __name__ == '__main__':
     bot_app.add_handler(CommandHandler("start", start))
     bot_app.add_handler(CommandHandler("gen", gen))
     bot_app.add_handler(CallbackQueryHandler(check_join, pattern="check"))
-    bot_app.run_polling(drop_pending_updates=True, timeout=60, read_timeout=60)
+    
+    # SAHI POLLING COMMAND:
+    print("Bot is starting...")
+    bot_app.run_polling(drop_pending_updates=True, timeout=60)
