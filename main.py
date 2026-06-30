@@ -31,13 +31,10 @@ async def is_member(update, context):
 
 # 1. Start Command with Premium Dance Sticker
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Premium Dance Sticker (Girl dancing)
-    # Sticker ID: CAACAgIAAxkBAAEX2Ntm8-y5a6y5a6y5a6y5a6y5a6y5AAJvAAOtZ9UAAAAy-z963_4uEwQ
     sticker_msg = await update.message.reply_sticker(sticker="CAACAgIAAxkBAAEX2Ntm8-y5a6y5a6y5a6y5a6y5a6y5AAJvAAOtZ9UAAAAy-z963_4uEwQ")
-    
-    # Sticker dikhne ka time
     await asyncio.sleep(2)
-    await sticker_msg.delete()
+    try: await sticker_msg.delete()
+    except: pass
 
     if not await is_member(update, context):
         kbd = [[InlineKeyboardButton(f"{get_e()} Join Channel", url="https://t.me/kushal_igcc_chats")],
@@ -46,7 +43,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await send_welcome(update, context)
 
-# 2. Universal Welcome Sender (Fix applied)
+# 2. Updated Universal Welcome Sender
 async def send_welcome(update, context):
     user = update.effective_user
     photos = await context.bot.get_user_profile_photos(user_id=user.id, limit=1)
@@ -96,9 +93,15 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # --- BOT RUNNER ---
 if __name__ == '__main__':
+    # Flask thread (Web service)
     Thread(target=lambda: app.run(host='0.0.0.0', port=8080), daemon=True).start()
-    bot = ApplicationBuilder().token(TOKEN).post_init(lambda app: app.bot.set_my_commands([BotCommand("start", "Welcome"), BotCommand("gen", "Generate")])).build()
-    bot.add_handler(CommandHandler("start", start))
-    bot.add_handler(CommandHandler("gen", gen))
-    bot.add_handler(CallbackQueryHandler(check_join, pattern="check"))
-    bot.run_polling(drop_pending_updates=True)
+    
+    # Bot Application
+    bot_app = ApplicationBuilder().token(TOKEN).build()
+    bot_app.add_handler(CommandHandler("start", start))
+    bot_app.add_handler(CommandHandler("gen", gen))
+    bot_app.add_handler(CallbackQueryHandler(check_join, pattern="check"))
+    
+    # Ye fix conflict ko rokega:
+    print("Bot is starting, killing old sessions...")
+    bot_app.run_polling(drop_pending_updates=True)
