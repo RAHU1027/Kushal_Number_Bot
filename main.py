@@ -11,14 +11,14 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Callb
 
 # --- CONFIGURATION ---
 TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
-CHANNEL_ID = "@your_channel_username" # Apna channel ID yahan daalein
+CHANNEL_ID = "@your_channel_username" # Yahan apne channel ka username daalo
 OWNER_NAME = "🦋💸 ⃪♔‌⃟𝐊𝐔𝐒𝐇𝐀𝐋 🇴‌𝐖𝐍𝐄𝐑≛⃝❛🚩"
 
 # --- RENDER PUBLIC SERVER ---
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return "Kushal Bot is Running!"
+    return "Kushal Bot is Live!"
 
 def run_web():
     port = int(os.environ.get("PORT", 10000))
@@ -27,9 +27,11 @@ def run_web():
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 # --- BOT LOGIC ---
-async def is_user_member(context, user_id):
+async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.type in [constants.ChatType.GROUP, constants.ChatType.SUPERGROUP]:
+        return True
     try:
-        member = await context.bot.get_chat_member(chat_id=CHANNEL_ID, user_id=user_id)
+        member = await context.bot.get_chat_member(chat_id=CHANNEL_ID, user_id=update.effective_user.id)
         return member.status in ['member', 'administrator', 'creator']
     except:
         return False
@@ -47,36 +49,44 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = await update.message.reply_text("✨ <b>Initializing...</b>", parse_mode=constants.ParseMode.HTML)
     await asyncio.sleep(0.5)
     
+    if await check_access(update, context):
+        await msg.delete()
+        await update.message.reply_text(f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\nUse /gen <code>bin</code> to start.", parse_mode=constants.ParseMode.HTML)
+        return
+
     keyboard = [
         [InlineKeyboardButton("🔗 Join Channel", url=f"https://t.me/{CHANNEL_ID.replace('@', '')}")],
         [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]
     ]
     await msg.edit_text(
-        f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n"
-        f"✨ Welcome to {OWNER_NAME}'s Generator.\nUse /gen <code>bin</code> to start.",
+        f"👋 Hello {update.effective_user.first_name}!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\n\n<b>Please join the channel to access:</b>",
         reply_markup=InlineKeyboardMarkup(keyboard),
         parse_mode=constants.ParseMode.HTML
     )
 
 async def check_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    if await is_user_member(context, query.from_user.id):
-        await query.answer("✅ Verified! Use /gen.", show_alert=True)
+    if await check_access(update, context):
+        await query.message.delete()
+        await query.message.reply_text("✅ <b>Verified!</b> You are now allowed to use /gen.", parse_mode=constants.ParseMode.HTML)
     else:
-        await query.answer("❌ Pehle Channel Join Karo!", show_alert=True)
+        await query.answer("❌ Please join the channel first!", show_alert=True)
 
 async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not await is_user_member(context, update.effective_user.id):
-        await update.message.reply_text("❌ Please join our channel first!")
+    if not await check_access(update, context):
+        await update.message.reply_text("❌ Please join the channel to use me in private!")
         return
 
     if not context.args:
-        await update.message.reply_text("❌ Use: /gen 557501")
+        await update.message.reply_text("❌ Use: /gen 413098")
         return
 
     bin_input = context.args[0]
-    msg = await update.message.reply_text("🔄 <b>Fetching Real-time Data...</b>", parse_mode=constants.ParseMode.HTML)
-    start_time = time.time()
+    msg = await update.message.reply_text("🔄 <b>Generating...</b> [■□□□□] 20%", parse_mode=constants.ParseMode.HTML)
+    start_t = time.time()
+    
+    await asyncio.sleep(0.5)
+    await msg.edit_text("🔄 <b>Generating...</b> [■■■□□] 60%", parse_mode=constants.ParseMode.HTML)
     
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
@@ -97,8 +107,9 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cvv = str(random.randint(100, 999))
         cc_list.append(f"<code>{full_card}|06|26|{cvv}</code>")
 
-    spent_time = round(time.time() - start_time, 2)
-    final_text = f"""<b>𝗕𝗜𝗡 ⇾ {bin_input}</b>
+    spent = round(time.time() - start_t, 2)
+    final_text = f"""{OWNER_NAME}
+<b>𝗕𝗜𝗡 ⇾ {bin_input}</b>
 <b>𝗔𝗺𝗼𝘂𝗻𝘁 ⇾ 10</b>
 
 {"\n".join(cc_list)}
@@ -106,7 +117,8 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
 <b>𝗜𝗻𝗳𝗼: {brand.upper()} - {type_cc.upper()}</b>
 <b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>
 <b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {emoji} {country}</b>
-<b>𝗧𝗶𝗺𝗲: {spent_time}s</b>"""
+<b>𝗧𝗶𝗺𝗲: {spent}s</b>
+╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"""
     
     await msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
 
