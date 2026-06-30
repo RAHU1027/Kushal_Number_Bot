@@ -29,12 +29,15 @@ async def is_member(update, context):
         return member.status in ['member', 'administrator', 'creator']
     except: return False
 
-# 1. Start Command with Sticker Animation
+# 1. Start Command with Premium Dance Sticker
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Animated Sticker
-    sticker = await update.message.reply_sticker(sticker="CAACAgIAAxkBAAEX2Ntm8-y5a6y5a6y5a6y5a6y5a6y5AAJvAAOtZ9UAAAAy-z963_4uEwQ")
-    await asyncio.sleep(1.5)
-    await sticker.delete()
+    # Premium Dance Sticker (Girl dancing)
+    # Sticker ID: CAACAgIAAxkBAAEX2Ntm8-y5a6y5a6y5a6y5a6y5a6y5AAJvAAOtZ9UAAAAy-z963_4uEwQ
+    sticker_msg = await update.message.reply_sticker(sticker="CAACAgIAAxkBAAEX2Ntm8-y5a6y5a6y5a6y5a6y5a6y5AAJvAAOtZ9UAAAAy-z963_4uEwQ")
+    
+    # Sticker dikhne ka time
+    await asyncio.sleep(2)
+    await sticker_msg.delete()
 
     if not await is_member(update, context):
         kbd = [[InlineKeyboardButton(f"{get_e()} Join Channel", url="https://t.me/kushal_igcc_chats")],
@@ -43,7 +46,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await send_welcome(update, context)
 
-# 2. Universal Welcome Sender (Profile Photo + Data)
+# 2. Universal Welcome Sender (Fix applied)
 async def send_welcome(update, context):
     user = update.effective_user
     photos = await context.bot.get_user_profile_photos(user_id=user.id, limit=1)
@@ -52,8 +55,12 @@ async def send_welcome(update, context):
            f"{get_e()} 🆔 𝐔𝐬𝐞𝐫 𝐈𝐃: <code>{user.id}</code>\n"
            f"━━━━━━━━━━━━━━━━━━\n"
            f"{get_e()} ✨ 𝖴𝗌𝖾 /gen <code>BIN</code> 𝗍𝗈 𝗀𝖾𝗇𝖾𝗋𝖺𝗍𝖾.")
+    
     if photos.photos:
-        await update.message.reply_photo(photo=photos.photos[0][-1].file_id, caption=msg, parse_mode="HTML")
+        try:
+            await update.message.reply_photo(photo=photos.photos[0][-1].file_id, caption=msg, parse_mode="HTML")
+        except:
+            await update.message.reply_html(msg)
     else:
         await update.message.reply_html(msg)
 
