@@ -13,7 +13,8 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Callb
 TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
 CHANNEL_ID = "@kushal_igcc_chats"
 IMAGE_URL = "https://i.ibb.co/your-image-link.jpg" 
-OWNER_NAME = "https://i.ibb.co/your-image-link.jpg"
+# Apna naam yahan likho
+OWNER_NAME = "Kushal"
 
 # --- RENDER PUBLIC SERVER ---
 app = Flask(__name__)
