@@ -12,7 +12,7 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Callb
 # --- CONFIGURATION ---
 TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
 CHANNEL_ID = "@kushal_igcc_chats"
-IMAGE_URL = "https://i.ibb.co/your-image-link.jpg" # Yahan apni image ka direct link daalein
+IMAGE_URL = "https://i.ibb.co/your-image-link.jpg" 
 OWNER_NAME = "🦋💸 ⃪♔‌⃟𝐊𝐔𝐒𝐇𝐀𝐋 🇴‌𝐖𝐍𝐄𝐑≛⃝❛🚩"
 
 # --- RENDER PUBLIC SERVER ---
@@ -38,18 +38,15 @@ async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return False
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Animation effect
     msg = await update.message.reply_text("✨ <b>Initializing...</b>", parse_mode=constants.ParseMode.HTML)
     await asyncio.sleep(0.5)
     
-    # Agar user pehle se joined hai
     if await check_access(update, context):
         await msg.delete()
         caption = f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\nUse /gen <code>bin</code> to start."
         await update.message.reply_photo(photo=IMAGE_URL, caption=caption, parse_mode=constants.ParseMode.HTML)
         return
 
-    # Agar user joined nahi hai
     keyboard = [[InlineKeyboardButton("🔗 Join Channel", url="https://t.me/kushal_igcc_chats")],
                 [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]]
     
@@ -65,6 +62,13 @@ async def check_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
     else:
         await query.answer("❌ Please join the channel first!", show_alert=True)
 
+def luhn_checksum(card_number):
+    digits = [int(d) for d in card_number]
+    for i in range(len(digits) - 2, -1, -2):
+        n = digits[i] * 2
+        digits[i] = n if n < 10 else n - 9
+    return (10 - (sum(digits) % 10)) % 10
+
 async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_access(update, context):
         await update.message.reply_text("❌ Please join @kushal_igcc_chats first!")
@@ -75,7 +79,6 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     bin_input = context.args[0]
-    # Animation
     msg = await update.message.reply_text("🔄 <b>Generating...</b> [■□□□□] 20%", parse_mode=constants.ParseMode.HTML)
     await asyncio.sleep(0.5)
     await msg.edit_text("🔄 <b>Generating...</b> [■■■■■] 100%", parse_mode=constants.ParseMode.HTML)
@@ -89,13 +92,13 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             bank, brand, type_cc, country = "Unknown", "Unknown", "Unknown", "Unknown"
 
-    # New Design Logic for Cards
     cc_list = []
     for _ in range(10):
-        full_card = f"{bin_input[:6]}{random.randint(1000000000, 9999999999)}"
+        partial = bin_input[:6] + "".join([str(random.randint(0, 9)) for _ in range(9)])
+        full_card = partial + str(luhn_checksum(partial))
         exp_m = str(random.randint(1, 12)).zfill(2)
-        exp_y = random.randint(2030, 2036)
-        cvv = random.randint(100, 999)
+        exp_y = random.randint(2026, 2036)
+        cvv = str(random.randint(100, 999))
         cc_list.append(f"<code>{full_card}|{exp_m}|{exp_y}|{cvv}</code>")
     
     final_text = f"""{OWNER_NAME}
@@ -104,14 +107,14 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 {"\n".join(cc_list)}
 
-<b>𝗜𝗻𝗳𝗼: {brand.upper()} - {type_cc.upper()} - {country.upper()}</b>
+<b>𝗜𝗻𝗳𝗼: {brand.upper()} - {type_cc.upper()}</b>
 <b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>
 <b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>
+<b>𝗧𝗶𝗺𝗲: {time.strftime("%H:%M:%S")} (Generated {round(time.time() - start_t, 2)}s ago)</b>
 ╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"""
     
     await msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
 
-# --- EXECUTION ---
 if __name__ == '__main__':
     Thread(target=run_web).start()
     app_bot = ApplicationBuilder().token(TOKEN).build()
