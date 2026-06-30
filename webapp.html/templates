@@ -1,1 +1,24 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { background: #1a1a1a; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .btn { width: 300px; padding: 20px; margin: 10px; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 8px; text-align: center; }
+        .blue { background-color: #3498db; }
+        .green { background-color: #27ae60; }
+        .red { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+    <button class="btn blue">ADD ME TO YOUR GROUP</button>
+    <div style="display: flex;">
+        <button class="btn green">HELP</button>
+        <button class="btn red">SOURCE</button>
+    </div>
+    <button class="btn blue">LANGS</button>
+    <div style="display: flex;">
+        <button class="btn blue">SUPPORT</button>
+        <button class="btn blue">CHANNEL</button>
+    </div>
+</body>
+</html>
