@@ -42,6 +42,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reactions = ["🔥", "✨", "🚀", "💎", "⚡", "🤖", "🛡️"]
     r_emoji = random.choice(reactions)
     
+    # Animation show karna
     msg = await update.message.reply_text(f"{r_emoji} 𝗜𝗡𝗜𝗧𝗜𝗔𝗟𝗜𝗭𝗜𝗡𝗚 𝗦𝗬𝗦𝗧𝗘𝗠...")
     await asyncio.sleep(0.5)
     await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚: [■□□□□□□□□□] 10%")
@@ -49,10 +50,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚: [■■■■■□□□□□] 50%")
     await asyncio.sleep(0.4)
     await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚: [■■■■■■■■■■] 100%")
+    
+    # Animation hatana
     await msg.delete()
 
-    # 2. Final Display Logic
-    is_joined = await check_access(update, context)
+    # 2. Final Welcome Message
     keyboard = [[InlineKeyboardButton("🔗 Join Channel", url="https://t.me/kushal_igcc_chats")],
                 [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]]
     
@@ -61,7 +63,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                f"🎮 <b>Hope you are enjoying the service!</b>\n\n"
                f"<b>Please join the channel to access:</b>")
     
-    await update.message.reply_photo(photo=IMAGE_URL, caption=caption, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=constants.ParseMode.HTML)
+    # 3. Yahan se photo, text aur buttons ek saath jayenge
+    await update.message.reply_photo(
+        photo=IMAGE_URL, 
+        caption=caption, 
+        reply_markup=InlineKeyboardMarkup(keyboard), 
+        parse_mode=constants.ParseMode.HTML
+    )
 
 async def check_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -111,7 +119,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     final_text = f"""{OWNER_NAME}
 <b>𝗕𝗜𝗡 ⇾ {bin_input}</b>
-<b>𝗔𝗺𝗼𝘂𝗻𝘁 ⇾ 10</b>
+<b>𝗔𝗺𝗼𝘂ɴ𝘁 ⇾ 10</b>
 
 {"\n".join(cc_list)}
 
