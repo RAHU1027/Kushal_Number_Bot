@@ -43,19 +43,19 @@ async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Animation ID: `{update.message.animation.file_id}`")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # 1. Animation (ID yahan daalein)
+    # 1. Animation
     anim = await update.message.reply_animation("YOUR_ANIMATION_ID_HERE")
     await asyncio.sleep(3)
     try: await anim.delete()
     except: pass
 
-    # 2. Sticker (Aapka diya gaya sticker)
+    # 2. Sticker
     sticker = await update.message.reply_sticker("CAACAgUAAxkBAAEf8IxqRIAwOovDJ8k8sDOrnxq-M31FIwACTA4AAoNyEVW11UDSBGNxizwE")
     await asyncio.sleep(2)
     try: await sticker.delete()
     except: pass
 
-    # 3. Welcome Message logic
+    # 3. Welcome Message
     if await check_access(update, context):
         caption = f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\nUse /gen <code>bin</code> to start."
         msg = await update.message.reply_photo(photo=IMAGE_URL, caption=caption, parse_mode=constants.ParseMode.HTML)
@@ -93,7 +93,6 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ Use: /gen 451245")
         return
 
-    # User Name Mention Fix
     custom_name = "Kushal's User"
     mention = f"<a href='tg://user?id={update.effective_user.id}'>{custom_name}</a>"
 
@@ -120,7 +119,20 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cvv = str(random.randint(100, 999))
         cc_list.append(f"<code>{full_card}|{exp_m}|{exp_y}|{cvv}</code>")
     
-    final_text = f"👤 <b>User:</b> {mention}\n\n{OWNER_NAME}\n<b>𝗕𝗜𝗡 ⇾ {bin_input}</b>\n<b>𝗔𝗺𝗼𝘂𝗻𝘁 ⇾ 10</b>\n\n{"\n".join(cc_list)}\n\n<b>𝗜𝗻𝗳𝗼: {brand.upper()} - {type_cc.upper()}</b>\n<b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>\n<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>\n<b>𝗧𝗶𝐦𝗲: {time.strftime("%H:%M:%S")} (Generated {round(time.time() - start_t, 2)}s ago)</b>\n╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"
+    # Yahan .format() use kiya hai taaki error na aaye
+    final_text = (
+        "👤 <b>User:</b> {mention}\n\n{owner}\n<b>𝗕𝗜𝗡 ⇾ {bin}</b>\n<b>𝗔𝗺𝗼𝘂𝗻𝘁 ⇾ 10</b>\n\n"
+        "{cards}\n\n"
+        "<b>𝗜𝗻𝗳𝗼: {brand} - {type_cc}</b>\n"
+        "<b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>\n"
+        "<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>\n"
+        "<b>𝗧𝗶𝗺𝗲: {time} (Generated {duration}s ago)</b>\n"
+        "╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝘅𝒐𝑪𝒉𝒌」━━━━━━╝"
+    ).format(
+        mention=mention, owner=OWNER_NAME, bin=bin_input, cards="\n".join(cc_list),
+        brand=brand.upper(), type_cc=type_cc.upper(), bank=bank, country=country,
+        time=time.strftime("%H:%M:%S"), duration=round(time.time() - start_t, 2)
+    )
     
     await msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
 
@@ -130,18 +142,5 @@ if __name__ == '__main__':
     app_bot.add_handler(CommandHandler("start", start))
     app_bot.add_handler(CommandHandler("gen", gen))
     app_bot.add_handler(MessageHandler(filters.ANIMATION, get_file_id))
-    app_bot.add_handler(CallbackQueryHandler(check_join_callback, pattern="check_join"))
-    app_bot.run_polling()<b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>
-<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>
-<b>𝗧𝗶𝗺𝗲: {time.strftime("%H:%M:%S")} (Generated {round(time.time() - start_t, 2)}s ago)</b>
-╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"""
-    
-    await msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
-
-if __name__ == '__main__':
-    Thread(target=run_web).start()
-    app_bot = ApplicationBuilder().token(TOKEN).build()
-    app_bot.add_handler(CommandHandler("start", start))
-    app_bot.add_handler(CommandHandler("gen", gen))
     app_bot.add_handler(CallbackQueryHandler(check_join_callback, pattern="check_join"))
     app_bot.run_polling()
