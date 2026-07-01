@@ -12,7 +12,6 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Callb
 # --- CONFIGURATION ---
 TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
 CHANNEL_ID = "@kushal_igcc_chats"
-IMAGE_URL = "https://i.ibb.co/L1r6hXg/IMG-20260701-022725-875.jpg" 
 OWNER_NAME = "Kushal"
 
 # --- RENDER PUBLIC SERVER ---
@@ -38,26 +37,37 @@ async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return False
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # ANIMATION START
+    # --- ORIGINAL ANIMATION SYSTEM ---
     reactions = ["🔥", "✨", "🚀", "💎", "⚡", "🤖", "🛡️"]
     r_emoji = random.choice(reactions)
+    
     msg = await update.message.reply_text(f"{r_emoji} 𝗜𝗡𝗜𝗧𝗜𝗔𝗟𝗜𝗭𝗜𝗡𝗚 𝗦𝗬𝗦𝗧𝗘𝗠...")
-    await asyncio.sleep(0.4); await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚 𝗗𝗔𝗧𝗔... [■■■□□□]")
-    await asyncio.sleep(0.4); await msg.edit_text(f"{r_emoji} 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗘𝗗! [■■■■■■] 100%")
+    await asyncio.sleep(0.5)
+    await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚: [■□□□□□□□□□] 10%")
+    await asyncio.sleep(0.4)
+    await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚: [■■■■■□□□□□] 50%")
+    await asyncio.sleep(0.4)
+    await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚: [■■■■■■■■■■] 100%")
     await msg.delete()
+    # --- ANIMATION END ---
 
-    # WELCOME MESSAGE WITH PHOTO AND BUTTONS
-    is_joined = await check_access(update, context)
+    # Welcome Text Content
+    user = update.effective_user
+    caption = (f"▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n"
+               f"👤 <b>User:</b> {user.first_name}\n"
+               f"🆔 <b>User ID:</b> <code>{user.id}</code>\n"
+               f"📛 <b>Username:</b> @{user.username if user.username else 'None'}\n"
+               f"✨ <b>Owner:</b> {OWNER_NAME}\n"
+               f"▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n\n"
+               f"📢 <b>Please join our channel to access:</b>\n\n"
+               f"⚡ <b>Use command:</b> <code>/gen 451245</code>")
+
+    # Buttons
     keyboard = [[InlineKeyboardButton("🔗 Join Channel", url="https://t.me/kushal_igcc_chats")],
                 [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]]
     
-    caption = f"""👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!
-✨ Welcome to {OWNER_NAME}'s Generator.
-🎮 Hope you are enjoying the service!
-
-<b>Please join the channel to access:</b>"""
-    
-    await update.message.reply_photo(photo=IMAGE_URL, caption=caption, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=constants.ParseMode.HTML)
+    # Send as simple text message
+    await update.message.reply_text(caption, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=constants.ParseMode.HTML)
 
 async def check_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -78,14 +88,12 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_access(update, context):
         await update.message.reply_text("❌ Please join @kushal_igcc_chats first!")
         return
-
     if not context.args:
         await update.message.reply_text("❌ Use: /gen 451245")
         return
 
     bin_input = context.args[0]
-    msg = await update.message.reply_text("🔄 <b>Generating...</b> [■□□□□] 20%", parse_mode=constants.ParseMode.HTML)
-    await asyncio.sleep(0.5); await msg.edit_text("🔄 <b>Generating...</b> [■■■■■] 100%", parse_mode=constants.ParseMode.HTML)
+    msg = await update.message.reply_text("🔄 <b>Generating...</b> [■■■■■] 100%", parse_mode=constants.ParseMode.HTML)
     
     start_t = time.time()
     async with httpx.AsyncClient(timeout=10.0) as client:
@@ -96,27 +104,9 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             bank, brand, type_cc, country = "Unknown", "Unknown", "Unknown", "Unknown"
 
-    cc_list = []
-    for _ in range(10):
-        partial = bin_input[:6] + "".join([str(random.randint(0, 9)) for _ in range(9)])
-        full_card = partial + str(luhn_checksum(partial))
-        exp_m = str(random.randint(1, 12)).zfill(2)
-        exp_y = random.randint(2026, 2036)
-        cvv = str(random.randint(100, 999))
-        cc_list.append(f"<code>{full_card}|{exp_m}|{exp_y}|{cvv}</code>")
+    cc_list = [f"<code>{bin_input[:6] + ''.join([str(random.randint(0, 9)) for _ in range(9)]) + str(luhn_checksum(bin_input[:6] + ''.join([str(random.randint(0, 9)) for _ in range(9)])))}|{str(random.randint(1, 12)).zfill(2)}|{random.randint(2026, 2036)}|{random.randint(100, 999)}</code>" for _ in range(10)]
     
-    final_text = f"""{OWNER_NAME}
-<b>𝗕𝗜𝗡 ⇾ {bin_input}</b>
-<b>𝗔𝗺𝗼𝘂ɴ𝘁 ⇾ 10</b>
-
-{"\n".join(cc_list)}
-
-<b>𝗜𝗻𝗳𝗼: {brand.upper()} - {type_cc.upper()}</b>
-<b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>
-<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>
-<b>𝗧𝗶𝗺𝗲: {time.strftime("%H:%M:%S")} (Generated {round(time.time() - start_t, 2)}s ago)</b>
-╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"""
-    
+    final_text = f"<b>[+] 𝙂𝙀𝙉𝙀𝙍𝘼𝙏𝙀𝘿 𝘾𝘼𝙍𝘿𝙎</b>\n\n"+"\n".join(cc_list)+f"\n\n<b>──────────────</b>\n<b>💳 𝘽𝙄𝙉:</b> <code>{bin_input}</code>\n<b>🏦 𝘽𝘼𝙉𝙆:</b> {bank}\n<b>📡 𝙏𝙔𝙋𝙀:</b> {brand.upper()} - {type_cc.upper()}\n<b>🌍 𝘾𝙊𝙐𝙉𝙏𝙍𝙔:</b> {country}\n<b>──────────────</b>\n<b>⏰ 𝙏𝙄𝙈𝙀:</b> {round(time.time() - start_t, 2)}s\n<b>👤 𝙊𝙒𝙉𝙀𝙍:</b> {OWNER_NAME}"
     await msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
 
 if __name__ == '__main__':
