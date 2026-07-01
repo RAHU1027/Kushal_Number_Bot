@@ -7,12 +7,13 @@ import time
 from flask import Flask
 from threading import Thread
 from telegram import Update, constants, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler
 
 # --- CONFIGURATION ---
 TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
 CHANNEL_ID = "@kushal_igcc_chats"
 IMAGE_URL = "https://i.ibb.co/your-image-link.jpg" 
+# Apna naam yahan likho
 OWNER_NAME = "Kushal"
 
 # --- RENDER PUBLIC SERVER ---
@@ -37,39 +38,22 @@ async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         return False
 
-# ID nikalne ka handler
-async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.animation:
-        await update.message.reply_text(f"Animation ID: `{update.message.animation.file_id}`")
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Animation ka Safe Code
-    try:
-        anim = await update.message.reply_animation("YOUR_ANIMATION_ID_HERE")
-        await asyncio.sleep(3)
-        await anim.delete()
-    except: pass
-
-    # Sticker ka Safe Code
-    try:
-        sticker = await update.message.reply_sticker("CAACAgUAAxkBAAEf8IxqRIAwOovDJ8k8sDOrnxq-M31FIwACTA4AAoNyEVW11UDSBGNxizwE")
-        await asyncio.sleep(2)
-        await sticker.delete()
-    except: pass
-
-    # Welcome Message
-    if await check_access(update, context):
-        caption = f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\nUse /gen <code>bin</code> to start."
-        msg = await update.message.reply_photo(photo=IMAGE_URL, caption=caption, parse_mode=constants.ParseMode.HTML)
-    else:
-        keyboard = [[InlineKeyboardButton("🔗 Join Channel", url="https://t.me/kushal_igcc_chats")],
-                    [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]]
-        caption = f"👋 Hello {update.effective_user.first_name}!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\n\n<b>Please join the channel to access:</b>"
-        msg = await update.message.reply_photo(photo=IMAGE_URL, caption=caption, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=constants.ParseMode.HTML)
+    msg = await update.message.reply_text("✨ <b>Initializing...</b>", parse_mode=constants.ParseMode.HTML)
+    await asyncio.sleep(0.5)
     
-    await asyncio.sleep(30)
-    try: await msg.delete()
-    except: pass
+    if await check_access(update, context):
+        await msg.delete()
+        caption = f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\nUse /gen <code>bin</code> to start."
+        await update.message.reply_photo(photo=IMAGE_URL, caption=caption, parse_mode=constants.ParseMode.HTML)
+        return
+
+    keyboard = [[InlineKeyboardButton("🔗 Join Channel", url="https://t.me/kushal_igcc_chats")],
+                [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]]
+    
+    caption = f"👋 Hello {update.effective_user.first_name}!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\n\n<b>Please join the channel to access:</b>"
+    await msg.delete()
+    await update.message.reply_photo(photo=IMAGE_URL, caption=caption, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=constants.ParseMode.HTML)
 
 async def check_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -95,9 +79,6 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ Use: /gen 451245")
         return
 
-    custom_name = "Kushal's User"
-    mention = f"<a href='tg://user?id={update.effective_user.id}'>{custom_name}</a>"
-
     bin_input = context.args[0]
     msg = await update.message.reply_text("🔄 <b>Generating...</b> [■□□□□] 20%", parse_mode=constants.ParseMode.HTML)
     await asyncio.sleep(0.5)
@@ -121,19 +102,17 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cvv = str(random.randint(100, 999))
         cc_list.append(f"<code>{full_card}|{exp_m}|{exp_y}|{cvv}</code>")
     
-    final_text = (
-        "👤 <b>User:</b> {mention}\n\n{owner}\n<b>𝗕𝗜𝗡 ⇾ {bin}</b>\n<b>𝗔𝗺𝗼𝘂𝗻𝘁 ⇾ 10</b>\n\n"
-        "{cards}\n\n"
-        "<b>𝗜𝗻𝗳𝗼: {brand} - {type_cc}</b>\n"
-        "<b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>\n"
-        "<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>\n"
-        "<b>𝗧𝗶𝗺𝗲: {time} (Generated {duration}s ago)</b>\n"
-        "╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"
-    ).format(
-        mention=mention, owner=OWNER_NAME, bin=bin_input, cards="\n".join(cc_list),
-        brand=brand.upper(), type_cc=type_cc.upper(), bank=bank, country=country,
-        time=time.strftime("%H:%M:%S"), duration=round(time.time() - start_t, 2)
-    )
+    final_text = f"""{OWNER_NAME}
+<b>𝗕𝗜𝗡 ⇾ {bin_input}</b>
+<b>𝗔𝗺𝗼𝘂𝗻𝘁 ⇾ 10</b>
+
+{"\n".join(cc_list)}
+
+<b>𝗜𝗻𝗳𝗼: {brand.upper()} - {type_cc.upper()}</b>
+<b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>
+<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>
+<b>𝗧𝗶𝗺𝗲: {time.strftime("%H:%M:%S")} (Generated {round(time.time() - start_t, 2)}s ago)</b>
+╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"""
     
     await msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
 
@@ -142,6 +121,5 @@ if __name__ == '__main__':
     app_bot = ApplicationBuilder().token(TOKEN).build()
     app_bot.add_handler(CommandHandler("start", start))
     app_bot.add_handler(CommandHandler("gen", gen))
-    app_bot.add_handler(MessageHandler(filters.ANIMATION, get_file_id))
     app_bot.add_handler(CallbackQueryHandler(check_join_callback, pattern="check_join"))
     app_bot.run_polling()
