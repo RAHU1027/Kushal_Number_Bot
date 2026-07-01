@@ -1,36 +1,26 @@
-<style>
-    /* !important lagane se Telegram ka default override ruk jayega */
-    body { 
-        background-color: #1a1a1a !important; 
-        color: white !important;
-        font-family: sans-serif; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        padding: 20px; 
-        height: 100vh;
-        margin: 0;
-    }
-    .btn { 
-        width: 300px; 
-        padding: 20px; 
-        margin: 10px; 
-        border: none; 
-        color: white !important; 
-        font-weight: bold; 
-        cursor: pointer; 
-        border-radius: 8px; 
-        text-align: center; 
-        text-decoration: none;
-    }
-    .blue { background-color: #3498db !important; }
-    .green { background-color: #27ae60 !important; }
-    .red { background-color: #c0392b !important; }
-</style>
-
-<!-- Yeh script zaroor dalna, isse Telegram ko pata chalega ki theme color apply karna hai -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { background: #1a1a1a; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .btn { width: 90%; max-width: 350px; padding: 18px; margin: 8px; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 12px; text-align: center; font-size: 16px; }
+        .blue { background-color: #3498db; }
+        .green { background-color: #27ae60; }
+        .red { background-color: #c0392b; }
+    </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <button class="btn blue" onclick="window.location.href='https://t.me/kushal_igcc_chats'">ADD ME TO YOUR GROUP</button>
+    <div style="width: 100%; display: flex; justify-content: center; gap: 10px;">
+        <button class="btn green" style="width: 40%;">HELP</button>
+        <button class="btn red" style="width: 40%;">SOURCE</button>
+    </div>
+    <button class="btn blue">LANGS</button>
+    <div style="width: 100%; display: flex; justify-content: center; gap: 10px;">
+        <button class="btn blue" style="width: 40%;">SUPPORT</button>
+        <button class="btn blue" style="width: 40%;">CHANNEL</button>
+    </div>
+</body>
+</html>
