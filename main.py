@@ -37,25 +37,27 @@ async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         return False
 
-# Animation ID nikalne ka handler
+# ID nikalne ka handler
 async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.animation:
         await update.message.reply_text(f"Animation ID: `{update.message.animation.file_id}`")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # 1. Animation
-    anim = await update.message.reply_animation("YOUR_ANIMATION_ID_HERE")
-    await asyncio.sleep(3)
-    try: await anim.delete()
+    # Animation ka Safe Code
+    try:
+        anim = await update.message.reply_animation("YOUR_ANIMATION_ID_HERE")
+        await asyncio.sleep(3)
+        await anim.delete()
     except: pass
 
-    # 2. Sticker
-    sticker = await update.message.reply_sticker("CAACAgUAAxkBAAEf8IxqRIAwOovDJ8k8sDOrnxq-M31FIwACTA4AAoNyEVW11UDSBGNxizwE")
-    await asyncio.sleep(2)
-    try: await sticker.delete()
+    # Sticker ka Safe Code
+    try:
+        sticker = await update.message.reply_sticker("CAACAgUAAxkBAAEf8IxqRIAwOovDJ8k8sDOrnxq-M31FIwACTA4AAoNyEVW11UDSBGNxizwE")
+        await asyncio.sleep(2)
+        await sticker.delete()
     except: pass
 
-    # 3. Welcome Message
+    # Welcome Message
     if await check_access(update, context):
         caption = f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\nUse /gen <code>bin</code> to start."
         msg = await update.message.reply_photo(photo=IMAGE_URL, caption=caption, parse_mode=constants.ParseMode.HTML)
@@ -119,7 +121,6 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cvv = str(random.randint(100, 999))
         cc_list.append(f"<code>{full_card}|{exp_m}|{exp_y}|{cvv}</code>")
     
-    # Yahan .format() use kiya hai taaki error na aaye
     final_text = (
         "👤 <b>User:</b> {mention}\n\n{owner}\n<b>𝗕𝗜𝗡 ⇾ {bin}</b>\n<b>𝗔𝗺𝗼𝘂𝗻𝘁 ⇾ 10</b>\n\n"
         "{cards}\n\n"
@@ -127,7 +128,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "<b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>\n"
         "<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>\n"
         "<b>𝗧𝗶𝗺𝗲: {time} (Generated {duration}s ago)</b>\n"
-        "╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝘅𝒐𝑪𝒉𝒌」━━━━━━╝"
+        "╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"
     ).format(
         mention=mention, owner=OWNER_NAME, bin=bin_input, cards="\n".join(cc_list),
         brand=brand.upper(), type_cc=type_cc.upper(), bank=bank, country=country,
