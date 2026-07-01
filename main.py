@@ -12,7 +12,7 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Callb
 # --- CONFIGURATION ---
 TOKEN = "8772576350:AAHuWfDUGuFAHVfZtMwn-WquwxYzH_qRAUo"
 CHANNEL_ID = "@kushal_igcc_chats"
-OWNER_NAME = {mention}
+OWNER_NAME = "welcome"
 
 # --- RENDER PUBLIC SERVER ---
 app = Flask(__name__)
@@ -106,7 +106,7 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     cc_list = [f"<code>{bin_input[:6] + ''.join([str(random.randint(0, 9)) for _ in range(9)]) + str(luhn_checksum(bin_input[:6] + ''.join([str(random.randint(0, 9)) for _ in range(9)])))}|{str(random.randint(1, 12)).zfill(2)}|{random.randint(2026, 2036)}|{random.randint(100, 999)}</code>" for _ in range(10)]
     
-    final_text = f"<b>[+] 𝙂𝙀𝙉𝙀𝙍𝘼𝙏𝙀𝘿 𝘾𝘼𝙍𝘿𝙎</b>\n\n"+"\n".join(cc_list)+f"\n\n<b>──────────────</b>\n<b>💳 𝘽𝙄𝙉:</b> <code>{bin_input}</code>\n<b>🏦 𝘽𝘼𝙉𝙆:</b> {bank}\n<b>📡 𝙏𝙔𝙋𝙀:</b> {brand.upper()} - {type_cc.upper()}\n<b>🌍 𝘾𝙊𝙐𝙉𝙏𝙍𝙔:</b> {country}\n<b>──────────────</b>\n<b>⏰ 𝙏𝙄𝙈𝙀:</b> {round(time.time() - start_t, 2)}s\n<b>👤 𝙊𝙒𝙉𝙀𝙍:</b> {mention}"
+    final_text = f"<b>[+] 𝙂𝙀𝙉𝙀𝙍𝘼𝙏𝙀𝘿 𝘾𝘼𝙍𝘿𝙎</b>\n\n"+"\n".join(cc_list)+f"\n\n<b>──────────────</b>\n<b>💳 𝘽𝙄𝙉:</b> <code>{bin_input}</code>\n<b>🏦 𝘽𝘼𝙉𝙆:</b> {bank}\n<b>📡 𝙏𝙔𝙋𝙀:</b> {brand.upper()} - {type_cc.upper()}\n<b>🌍 𝘾𝙊𝙐𝙉𝙏𝙍𝙔:</b> {country}\n<b>──────────────</b>\n<b>⏰ 𝙏𝙄𝙈𝙀:</b> {round(time.time() - start_t, 2)}s\n<b>👤 𝙊𝙒𝙉𝙀𝙍:</b> {OWNER_NAME}"
     await msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
 
 if __name__ == '__main__':
