@@ -38,31 +38,24 @@ async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return False
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # 1. PEHLE ANIMATION
-    msg = await update.message.reply_text("✨ ʟᴏᴀᴅɪɴɢ ᴘʀᴏғɪʟᴇ... 0%")
-    await asyncio.sleep(0.4); await msg.edit_text("✨ ʟᴏᴀᴅɪɴɢ ᴘʀᴏғɪʟᴇ... 50% [▓▓▓▓▓░░░░░]")
-    await asyncio.sleep(0.4); await msg.edit_text("✨ ʟᴏᴀᴅɪɴɢ ᴘʀᴏғɪʟᴇ... 100% [▓▓▓▓▓▓▓▓▓▓]")
+    # 1. Animation
+    msg = await update.message.reply_text("✨ ʟᴏᴀᴅɪɴɢ... 0%")
+    await asyncio.sleep(0.4); await msg.edit_text("✨ ʟᴏᴀᴅɪɴɢ... 50% [▓▓▓▓▓░░░░░]")
+    await asyncio.sleep(0.4); await msg.edit_text("✨ ᴄᴏᴍᴘʟᴇᴛᴇᴅ! [▓▓▓▓▓▓▓▓▓▓] 100%")
     await msg.delete()
 
-    # 2. PHIR WELCOME MESSAGE + PHOTO + BUTTONS
+    # 2. Welcome Message with Photo and Buttons
     is_joined = await check_access(update, context)
+    keyboard = [[InlineKeyboardButton("🔗 Join Channel", url="https://t.me/kushal_igcc_chats")],
+                [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]]
     
-    if is_joined:
-        caption = f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\nUse /gen <code>bin</code> to start."
-        await update.message.reply_photo(photo=IMAGE_URL, caption=caption, parse_mode=constants.ParseMode.HTML)
-    else:
-        # Buttons ka structure
-        keyboard = [
-            [InlineKeyboardButton("🔗 Join Channel", url="https://t.me/kushal_igcc_chats")],
-            [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]
-        ]
-        caption = f"👋 Hello {update.effective_user.first_name}!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\n\n<b>Please join the channel to access:</b>"
-        await update.message.reply_photo(photo=IMAGE_URL, caption=caption, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=constants.ParseMode.HTML)
+    caption = f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n✨ Welcome to {OWNER_NAME}'s Generator.\n\n<b>Please join the channel to access:</b>"
+    
+    await update.message.reply_photo(photo=IMAGE_URL, caption=caption, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=constants.ParseMode.HTML)
 
 async def check_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     if await check_access(update, context):
-        await query.answer("✅ Verified!", show_alert=True)
         await query.message.delete()
         await query.message.reply_text("✅ <b>Verified!</b> You are now allowed to use /gen.", parse_mode=constants.ParseMode.HTML)
     else:
@@ -85,9 +78,8 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     bin_input = context.args[0]
-    msg = await update.message.reply_text("✨ ɢᴇɴᴇʀᴀᴛɪɴɢ... 0%")
-    await asyncio.sleep(0.4); await msg.edit_text("✨ ɢᴇɴᴇʀᴀᴛɪɴɢ... 50% [▓▓▓▓▓░░░░░]")
-    await asyncio.sleep(0.4); await msg.edit_text("✨ ᴄᴏᴍᴘʟᴇᴛᴇᴅ! [▓▓▓▓▓▓▓▓▓▓] 100%")
+    msg = await update.message.reply_text("🔄 <b>Generating...</b> [■□□□□] 20%", parse_mode=constants.ParseMode.HTML)
+    await asyncio.sleep(0.5); await msg.edit_text("🔄 <b>Generating...</b> [■■■■■] 100%", parse_mode=constants.ParseMode.HTML)
     
     start_t = time.time()
     async with httpx.AsyncClient(timeout=10.0) as client:
@@ -98,9 +90,27 @@ async def gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             bank, brand, type_cc, country = "Unknown", "Unknown", "Unknown", "Unknown"
 
-    cc_list = [f"<code>{bin_input[:6] + ''.join([str(random.randint(0, 9)) for _ in range(9)]) + str(luhn_checksum(bin_input[:6] + ''.join([str(random.randint(0, 9)) for _ in range(9)])))}|{str(random.randint(1, 12)).zfill(2)}|{random.randint(2026, 2036)}|{random.randint(100, 999)}</code>" for _ in range(10)]
+    cc_list = []
+    for _ in range(10):
+        partial = bin_input[:6] + "".join([str(random.randint(0, 9)) for _ in range(9)])
+        full_card = partial + str(luhn_checksum(partial))
+        exp_m = str(random.randint(1, 12)).zfill(2)
+        exp_y = random.randint(2026, 2036)
+        cvv = str(random.randint(100, 999))
+        cc_list.append(f"<code>{full_card}|{exp_m}|{exp_y}|{cvv}</code>")
     
-    final_text = f"<b>[+] 𝙂𝙀𝙉𝙀𝙍𝘼𝙏𝙀𝘿 𝘾𝘼𝙍𝘿𝙎</b>\n\n"+"\n".join(cc_list)+f"\n\n<b>──────────────</b>\n<b>💳 𝘽𝙄𝙉:</b> <code>{bin_input}</code>\n<b>🏦 𝘽𝘼𝙉𝙆:</b> {bank}\n<b>📡 𝙏𝙔𝙋𝙀:</b> {brand.upper()} - {type_cc.upper()}\n<b>🌍 𝘾𝙊𝙐𝙉𝙏𝙍𝙔:</b> {country}\n<b>──────────────</b>\n<b>⏰ 𝙏𝙄𝙈𝙀:</b> {round(time.time() - start_t, 2)}s\n<b>👤 𝙊𝙒𝙉𝙀𝙍:</b> {OWNER_NAME}"
+    final_text = f"""{OWNER_NAME}
+<b>𝗕𝗜𝗡 ⇾ {bin_input}</b>
+<b>𝗔𝗺𝗼𝘂ɴ𝘁 ⇾ 10</b>
+
+{"\n".join(cc_list)}
+
+<b>𝗜𝗻𝗳𝗼: {brand.upper()} - {type_cc.upper()}</b>
+<b>𝐈𝐬𝐬𝐮𝐞𝐫: {bank}</b>
+<b>𝐂𝐨𝐮𝐧𝐭𝐫𝐲: {country}</b>
+<b>𝗧𝗶𝗺𝗲: {time.strftime("%H:%M:%S")} (Generated {round(time.time() - start_t, 2)}s ago)</b>
+╚━━━━━━「𝒁𝒆𝒓𝒐𝑻𝒘𝒐𝑪𝒉𝒌」━━━━━━╝"""
+    
     await msg.edit_text(final_text, parse_mode=constants.ParseMode.HTML)
 
 if __name__ == '__main__':
