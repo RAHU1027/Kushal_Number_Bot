@@ -38,38 +38,26 @@ async def check_access(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return False
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # 1. Random Reaction Animation
+    # ANIMATION START
     reactions = ["🔥", "✨", "🚀", "💎", "⚡", "🤖", "🛡️"]
     r_emoji = random.choice(reactions)
-    
-    # Animation show karna
     msg = await update.message.reply_text(f"{r_emoji} 𝗜𝗡𝗜𝗧𝗜𝗔𝗟𝗜𝗭𝗜𝗡𝗚 𝗦𝗬𝗦𝗧𝗘𝗠...")
-    await asyncio.sleep(0.5)
-    await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚: [■□□□□□□□□□] 10%")
-    await asyncio.sleep(0.4)
-    await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚: [■■■■■□□□□□] 50%")
-    await asyncio.sleep(0.4)
-    await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚: [■■■■■■■■■■] 100%")
-    
-    # Animation hatana
+    await asyncio.sleep(0.4); await msg.edit_text(f"{r_emoji} 𝗟𝗢𝗔𝗗𝗜𝗡𝗚 𝗗𝗔𝗧𝗔... [■■■□□□]")
+    await asyncio.sleep(0.4); await msg.edit_text(f"{r_emoji} 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗘𝗗! [■■■■■■] 100%")
     await msg.delete()
 
-    # 2. Final Welcome Message
+    # WELCOME MESSAGE WITH PHOTO AND BUTTONS
+    is_joined = await check_access(update, context)
     keyboard = [[InlineKeyboardButton("🔗 Join Channel", url="https://t.me/kushal_igcc_chats")],
                 [InlineKeyboardButton("✅ Check Join", callback_data="check_join")]]
     
-    caption = (f"👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!\n\n"
-               f"✨ Welcome to {OWNER_NAME}'s Generator.\n"
-               f"🎮 <b>Hope you are enjoying the service!</b>\n\n"
-               f"<b>Please join the channel to access:</b>")
+    caption = f"""👋 Hello <a href='tg://user?id={update.effective_user.id}'>{update.effective_user.first_name}</a>!
+✨ Welcome to {OWNER_NAME}'s Generator.
+🎮 Hope you are enjoying the service!
+
+<b>Please join the channel to access:</b>"""
     
-    # 3. Yahan se photo, text aur buttons ek saath jayenge
-    await update.message.reply_photo(
-        photo=IMAGE_URL, 
-        caption=caption, 
-        reply_markup=InlineKeyboardMarkup(keyboard), 
-        parse_mode=constants.ParseMode.HTML
-    )
+    await update.message.reply_photo(photo=IMAGE_URL, caption=caption, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=constants.ParseMode.HTML)
 
 async def check_join_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
