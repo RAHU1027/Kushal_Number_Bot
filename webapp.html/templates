@@ -1,24 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { background: #1a1a1a; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .btn { width: 300px; padding: 20px; margin: 10px; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 8px; text-align: center; }
-        .blue { background-color: #3498db; }
-        .green { background-color: #27ae60; }
-        .red { background-color: #c0392b; }
-    </style>
-</head>
-<body>
-    <button class="btn blue">ADD ME TO YOUR GROUP</button>
-    <div style="display: flex;">
-        <button class="btn green">HELP</button>
-        <button class="btn red">SOURCE</button>
-    </div>
-    <button class="btn blue">LANGS</button>
-    <div style="display: flex;">
-        <button class="btn blue">SUPPORT</button>
-        <button class="btn blue">CHANNEL</button>
-    </div>
-</body>
-</html>
+<style>
+    /* !important lagane se Telegram ka default override ruk jayega */
+    body { 
+        background-color: #1a1a1a !important; 
+        color: white !important;
+        font-family: sans-serif; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        padding: 20px; 
+        height: 100vh;
+        margin: 0;
+    }
+    .btn { 
+        width: 300px; 
+        padding: 20px; 
+        margin: 10px; 
+        border: none; 
+        color: white !important; 
+        font-weight: bold; 
+        cursor: pointer; 
+        border-radius: 8px; 
+        text-align: center; 
+        text-decoration: none;
+    }
+    .blue { background-color: #3498db !important; }
+    .green { background-color: #27ae60 !important; }
+    .red { background-color: #c0392b !important; }
+</style>
+
+<!-- Yeh script zaroor dalna, isse Telegram ko pata chalega ki theme color apply karna hai -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+</script>
